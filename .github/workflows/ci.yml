@@ -1,0 +1,38 @@
+name: Lightning CI/CD Pipeline
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Test app startup
+        run: node app.js & sleep 2 && kill $!
+
+      - name: Build Docker image
+        run: docker build -t ghcr.io/wilson7777777/lightning-devops-mini-pipeline:latest .
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push image
+        run: docker push ghcr.io/wilson7777777/lightning-devops-mini-pipeline:latest
+
