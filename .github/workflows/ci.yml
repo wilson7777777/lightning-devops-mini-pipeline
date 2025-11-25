@@ -6,33 +6,42 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # 1. Checkout the repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      # 2. Set up Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
+      # 3. Install npm dependencies
       - name: Install dependencies
         run: npm install
 
+      # 4. Run a quick smoke test
       - name: Run smoke test
-        run: node app.js & sleep 2 && kill $!
+        run: |
+          node app.js & sleep 3 && kill $!
 
+      # 5. Log in to GitHub Container Registry (GHCR)
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
+          registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GHCR_PAT }}
 
+      # 6. Build Docker image
       - name: Build Docker image
-        run: docker build -t ghcr.io/wilson7777777/lightning-devops-mini-pipeline:latest .
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/lightning-devops-mini-pipeline:latest .
 
+      # 7. Push Docker image to GHCR
       - name: Push Docker image
-        run: docker push ghcr.io/wilson7777777/lightning-devops-mini-pipeline:latest
+        run: docker push ghcr.io/${{ github.repository_owner }}/lightning-devops-mini-pipeline:latest
 
