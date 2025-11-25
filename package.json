@@ -1,6 +1,7 @@
 {
   "name": "lightning-devops-mini-pipeline",
   "version": "1.0.0",
+  "description": "A lightning-fast CI/CD DevOps mini project with Node.js, Docker, and GitHub Actions.",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
@@ -9,3 +10,4 @@
     "express": "^4.18.2"
   }
 }
+
